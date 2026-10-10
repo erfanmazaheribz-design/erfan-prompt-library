@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Prompt Library | کتابخانه پرامپت</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151d31;--line:#2b3854;--text:#f4f7ff;--muted:#aab6ce;--accent:#7c9cff;--good:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#111a31,#080c17 65%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;line-height:1.8;padding:22px 14px}
+main{max-width:850px;margin:auto}
+header{padding:10px 2px 20px}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 11px;color:var(--accent);font-size:12px}
+h1{font-size:clamp(25px,5vw,38px);line-height:1.4;margin:12px 0 4px}
+p{color:var(--muted);margin:4px 0 14px}
+.card{background:rgba(21,29,49,.96);border:1px solid var(--line);border-radius:18px;padding:17px;margin:14px 0;box-shadow:0 12px 35px #0002}
+label{display:block;font-weight:700;margin:8px 0}
+input,textarea{width:100%;border:1px solid var(--line);background:#0a1020;color:var(--text);border-radius:12px;padding:13px;font:inherit;outline:none}
+textarea{min-height:220px;resize:vertical;direction:auto;text-align:start;white-space:pre;tab-size:4;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.55}
+input:focus,textarea:focus{border-color:var(--accent)}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+button{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#071126}
+button.secondary{background:#26334e;color:var(--text);border:1px solid var(--line)}
+button:active{transform:scale(.99)}
+small{color:var(--muted)}
+.preview{white-space:pre-wrap;overflow-wrap:anywhere;direction:auto;text-align:start;font:14px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#090e1b;border:1px solid var(--line);border-radius:12px;padding:14px;max-height:420px;overflow:auto}
+details summary{cursor:pointer;font-weight:700;color:var(--accent);padding:8px 0}
+.notice{font-size:13px;color:var(--muted)}
+#status{min-height:1.5em;color:var(--good);font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+<span class="badge">PROMPT LIBRARY</span>
+<h1>کتابخانه پرامپت</h1>
+<p>پرامپت طولانی را وارد کن، پیش‌نمایش جمع‌شونده بساز و کل متن را با یک لمس کپی کن.</p>
+</header>
+<section class="card">
+<label for="title">عنوان پرامپت</label>
+<input id="title" placeholder="مثلاً: Reel Cover Mega Prompt" autocomplete="off">
+<label for="prompt">متن کامل پرامپت</label>
+<textarea id="prompt" spellcheck="false" placeholder="پرامپت را اینجا Paste کن. فاصله‌ها و دیاگرام‌های ASCII تا حد امکان حفظ می‌شوند."></textarea>
+<div class="row">
+<button id="copy">کپی کل پرامپت</button>
+<button class="secondary" id="make">ساخت فایل قابل‌انتشار</button>
+<button class="secondary" id="clear">پاک‌کردن</button>
+</div>
+<div id="status" role="status" aria-live="polite"></div>
+<p class="notice">نکته: این صفحه خودش متن را روی سایت عمومی ذخیره نمی‌کند. برای انتشار یک پرامپت ثابت، از «ساخت فایل قابل‌انتشار» استفاده کن و فایل ساخته‌شده را در مخزن GitHub قرار بده.</p>
+</section>
+<section class="card">
+<h2 id="previewTitle">پیش‌نمایش پرامپت</h2>
+<details open>
+<summary>نمایش / بستن متن کامل</summary>
+<pre id="preview" class="preview">متن پرامپت پس از وارد کردن، اینجا نمایش داده می‌شود.</pre>
+</details>
+<div class="row"><button id="copyPreview">کپی کل پرامپت</button></div>
+</section>
+<footer>Prompt Library · متن و دیاگرام‌ها را به‌صورت متن ساده نگه می‌دارد.</footer>
+</main>
+<script>
+const titleEl=document.getElementById('title'), promptEl=document.getElementById('prompt'), preview=document.getElementById('preview'), previewTitle=document.getElementById('previewTitle'), statusEl=document.getElementById('status');
+function refresh(){preview.textContent=promptEl.value||'متن پرامپت پس از وارد کردن، اینجا نمایش داده می‌شود.';previewTitle.textContent=titleEl.value.trim()||'پیش‌نمایش پرامپت'}
+titleEl.addEventListener('input',refresh);promptEl.addEventListener('input',refresh);
+async function copyAll(){if(!promptEl.value){statusEl.textContent='اول متن پرامپت را وارد کن.';return}try{await navigator.clipboard.writeText(promptEl.value);statusEl.textContent='کل پرامپت کپی شد.'}catch(e){promptEl.focus();promptEl.select();const ok=document.execCommand('copy');statusEl.textContent=ok?'کل پرامپت کپی شد.':'متن را انتخاب کن و Copy را بزن.'}}
+document.getElementById('copy').addEventListener('click',copyAll);
+document.getElementById('copyPreview').addEventListener('click',copyAll);
+document.getElementById('clear').addEventListener('click',()=>{titleEl.value='';promptEl.value='';refresh();statusEl.textContent='';});
+document.getElementById('make').addEventListener('click',()=>{
+ const t=titleEl.value.trim()||'پرامپت';
+ const p=promptEl.value;
+ if(!p){statusEl.textContent='اول متن پرامپت را وارد کن.';return}
+ const safeTitle=t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const escaped=JSON.stringify(p).replace(/</g,'\\u003c');
+ const doc='<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>body{margin:0;padding:20px 14px;background:#0b1020;color:#f4f7ff;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Tahoma,sans-serif;line-height:1.8}main{max-width:850px;margin:auto}.box{background:#151d31;border:1px solid #2b3854;border-radius:16px;padding:18px}h1{font-size:26px}button{background:#7c9cff;color:#071126;border:0;border-radius:10px;padding:12px 18px;font-size:16px;font-weight:bold}details{margin-top:16px}summary{cursor:pointer;color:#9db4ff;font-weight:bold}pre{white-space:pre;overflow:auto;direction:auto;text-align:start;background:#090e1b;padding:14px;border-radius:12px;font:14px/1.6 ui-monospace,Menlo,Consolas,monospace}#msg{color:#4ade80}</style></head><body><main><div class="box"><h1>'+safeTitle+'</h1><button id="copy">کپی کل پرامپت</button> <span id="msg"></span><details><summary>نمایش / بستن پرامپت کامل</summary><pre id="text"></pre></details></div></main><script>const promptText='+escaped+';document.getElementById("text").textContent=promptText;document.getElementById("copy").onclick=async()=>{try{await navigator.clipboard.writeText(promptText);document.getElementById("msg").textContent="کپی شد ✓"}catch(e){const a=document.createElement("textarea");a.value=promptText;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove();document.getElementById("msg").textContent="کپی شد ✓"}};<\/script></body></html>';
+ const blob=new Blob([doc],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='prompt-page.html';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);statusEl.textContent='فایل HTML آماده شد؛ آن را در مخزن GitHub بارگذاری کن.';
+});
+refresh();
+</script>
+</body></html>
